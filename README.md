@@ -1,34 +1,34 @@
-# Walmart Data Warehouse Project (i211767)
+# Walmart Data Warehouse Project
 
 Summary
 -------
-This repository contains a complete data warehouse project for the Walmart dataset. It includes schema creation, ETL code (production loader), a HYBRIDJOIN algorithm implementation, and 20 OLAP queries. All deliverables required for the course submission are provided and documented.
+This repository contains a data warehouse project for a Walmart sales dataset. It includes SQL scripts to create the data warehouse schema, ETL code for loading dimensions and fact tables, an implementation of a HYBRIDJOIN algorithm used during loading, and a set of OLAP queries for analysis.
 
-Key Deliverables
+Key deliverables
 ----------------
-- `Create-DW.sql` — SQL Server script to create the data warehouse schema (dimensions, fact, indexes).
-- `simple_loader.py` — Production ETL script that loads customers, products, time dimension and the sales fact table.
-- `main.py` — ETL orchestrator and helper routines.
-- `hybrid_join.py` — HYBRIDJOIN algorithm implementation used in the ETL.
-- `Queries-DW.sql` — 20 OLAP queries for analysis and marking.
-- `Project-Report.txt` — Full project report with methodology, results and analysis.
-- `DIAGRAMS.md` — Visual diagrams for schema, ETL flow and algorithm.
+- Create-DW.sql — SQL Server script to create the data warehouse schema (dimensions, fact table, and indexes).
+- simple_loader.py — Production ETL script that loads customers, products, time dimension and the sales fact table.
+- main.py — ETL orchestrator and helper routines.
+- hybrid_join.py — HYBRIDJOIN algorithm implementation used in the ETL.
+- Queries-DW.sql — A collection of OLAP queries for analytical testing and demonstration.
+- Project-Report.txt — Project report with methodology, results and analysis.
+- DIAGRAMS.md — Visual diagrams for schema, ETL flow and algorithm.
 
-Optional / Supporting Files
+Optional / supporting files
 --------------------------
-- `final_etl.py`, `fixed_etl.py` — earlier ETL versions (kept for traceability).
-- CSV input files: `customer_master_data.csv`, `product_master_data.csv`, `transactional_data/transactional_data.csv`.
-- `SUMMARY.txt`, `README-COMPLETE.txt`, `SUBMISSION-GUIDE.txt` (may be present or modified).
+- final_etl.py, fixed_etl.py — earlier ETL versions kept for traceability.
+- CSV input files: customer_master_data.csv, product_master_data.csv, transactional_data/transactional_data.csv.
+- SUMMARY.txt, README-COMPLETE.txt (may be present or modified).
 
 Requirements
 ------------
-- OS: Windows (tested here)
-- Python: 3.8+ (3.12 used during development)
-- Packages: `pandas`, `pyodbc`
-- SQL Server: SQL Server 2016+ (tested on SQL Server 2019)
-- ODBC Driver: Microsoft ODBC Driver 17 for SQL Server (or newer)
+- OS: Windows (tested here) but scripts are cross-platform where possible.
+- Python: 3.8+ (development used 3.12).
+- Packages: pandas, pyodbc.
+- SQL Server: SQL Server 2016+ (tested on SQL Server 2019).
+- ODBC Driver: Microsoft ODBC Driver 17 for SQL Server (or newer).
 
-Quick Setup
+Quick setup
 -----------
 1. Ensure SQL Server is installed and running.
 2. Install Python dependencies:
@@ -37,9 +37,11 @@ Quick Setup
 python -m pip install pandas pyodbc
 ```
 
-3. Open `Create-DW.sql` in SQL Server Management Studio (or run with sqlcmd) and execute to create the `WalmartDW` schema and indexes.
+3. Create the database objects by executing Create-DW.sql in SQL Server Management Studio or with sqlcmd. This will create the WalmartDW schema and supporting objects.
 
-4. Configure authentication in `main.py` or `simple_loader.py` connection string (the code auto-detects Windows auth when password is empty). Example connection string used by scripts:
+Configuration
+-------------
+Open main.py or simple_loader.py and configure the connection string to your SQL Server instance. Example connection string (Windows integrated authentication):
 
 ```python
 conn_str = (
@@ -50,54 +52,49 @@ conn_str = (
 )
 ```
 
-Loading Data (recommended flow)
+If you prefer SQL Server authentication, set UID and PWD in the connection string.
+
+Loading data (recommended flow)
 ------------------------------
-1. Create the database objects by executing `Create-DW.sql`.
-2. Run the production loader (`simple_loader.py`) to populate dimensions and facts. This script uses batch commits and in-memory lookups for performance.
+1. Execute Create-DW.sql to create schema and indexes.
+2. Run the production loader (simple_loader.py) to populate dimensions and the fact table. The loader uses batch commits and in-memory lookups for better performance.
 
 ```powershell
 # From the project directory
 python .\simple_loader.py
 ```
 
-Note: Loading all transactions may take ~60–90 minutes depending on machine specs. The script prints progress periodically.
+Note: Loading the full transactional dataset may take significant time depending on machine specs. The loader prints progress updates and is designed to resume/retry on failures.
 
-Running Queries
+Running queries
 ---------------
-After data is loaded, open `Queries-DW.sql` in SQL Server Management Studio and execute the batches to see the results for the 20 OLAP queries.
+After loading data, open Queries-DW.sql in SQL Server Management Studio and execute the batches to run the OLAP queries and review results.
 
-Project Notes & Tips
---------------------
-- If your Windows username contains spaces, the loader defaults to using `Trusted_Connection=yes`.
-- If you prefer SQL authentication, update the `UID` and `PWD` in the connection string in `main.py` or `simple_loader.py`.
-- If queries use window functions or advanced constructs and your SQL Server is older, adjust SQL accordingly (scripts tested on SQL Server 2019).
+Notes & tips
+-----------
+- If your Windows username contains spaces or special characters, using Trusted_Connection (Windows auth) is recommended for convenience.
+- For large datasets, ensure SQL Server has sufficient memory and disk space for indexes and bulk inserts.
+- The scripts were tested with SQL Server 2019; if you run into SQL compatibility issues, adapt or simplify the queries to match your server's supported features.
 
-Reproducibility Checklist
+Reproducibility checklist
 ------------------------
-- [ ] `Create-DW.sql` executed successfully
-- [ ] `simple_loader.py` run to completion (550,068 transactions loaded)
-- [ ] `Queries-DW.sql` executed with results
-- [ ] `Project-Report.txt` and `DIAGRAMS.md` reviewed
+- Create-DW.sql executed successfully.
+- simple_loader.py run to completion and data loaded into the warehouse.
+- Queries-DW.sql executed with results.
+- Project report and diagrams reviewed for methodology and architecture.
 
-If You Need To Submit
+Contributing & issues
 ---------------------
-Create a folder `Taha_i211767_Project` containing the 5 required files plus README and diagrams, compress it, and upload to your submission system.
-
-Example PowerShell compress command:
-
-```powershell
-Compress-Archive -Path "Taha_i211767_Project" -DestinationPath "Taha_i211767_Project.zip"
-```
+If you find bugs, have suggestions, or want to contribute improvements (examples: a requirements.txt, a run script, or additional documentation), please open an issue or a pull request on this repository.
 
 Contact
 -------
-For questions about the repository or reproducibility, contact:
-- Student: Syed Taha Hasan (i211767)
+For questions or to report issues, please use the repository's GitHub Issues.
 
 License
 -------
-This repository is for course submission and academic use only.
+This repository is provided for demonstration and learning. See LICENSE for details if present.
 
 ---
 
-If you'd like a longer README with step-by-step screenshots, or a `requirements.txt` + run script, tell me which to add and I will create them.
+If you'd like an expanded README with step-by-step screenshots, or a requirements.txt and run script, tell me which to add and I will create them.
